@@ -1,42 +1,38 @@
+#STREAMLIT
+
 import streamlit as st
 import pandas as pd
 import pickle
 
-# Load model
 @st.cache_resource
-def load_models():
-    with open("best_gradient_boosting.pkl", "rb") as f:
-        gb = pickle.load(f)
-    with open("best_random_forest.pkl", "rb") as f:
-        rf = pickle.load(f)
-    return gb, rf
+def load_model():
+    with open("BestModel_CLF_RandomForest_Kelompokan.pkl", "rb") as f:
+        model = pickle.load(f)
+    return model
 
-gb_model, rf_model = load_models()
+rf_model = load_model()
 
-# Setup 
 st.set_page_config(page_title="Earthquake Alert Prediction", layout="centered")
 st.title("🌋 Earthquake Alert Prediction")
 
 st.markdown("""
 Aplikasi ini memprediksi **warna peringatan (alert)** dari suatu gempa bumi 
-menggunakan dua model Machine Learning: **Gradient Boosting** dan **Random Forest**.
+menggunakan model Machine Learning terbaik: **Random Forest Classifier**.
 """)
 
-# Penjelasan Input
 st.markdown("""
-### 📘 Penjelasan Fitur Input
+### Penjelasan Fitur Input
 | Nama Fitur | Arti | Penjelasan Sederhana |
 |-------------|------|----------------------|
-| **Magnitude** | Kekuatan gempa (skala Richter) | Mengukur energi yang dilepaskan gempa. Semakin besar angkanya, semakin kuat gempanya. |
-| **Depth (km)** | Kedalaman pusat gempa dari permukaan bumi | Diukur dalam kilometer. Gempa dangkal (<70 km) biasanya terasa lebih kuat di permukaan. |
-| **CDI** | Community Determined Intensity | Nilai dari 1–10, menunjukkan seberapa kuat guncangan dirasakan oleh masyarakat. |
-| **MMI** | Modified Mercalli Intensity | Skala 1–10 juga, menunjukkan seberapa parah efek fisik gempa terhadap bangunan dan lingkungan. |
-| **SIG** | Significance | Menunjukkan tingkat signifikansi gempa terhadap area dan populasi (positif = signifikan, negatif = ringan). |
+| **Magnitude** | Kekuatan gempa (skala Richter) | Semakin besar nilainya, semakin kuat gempa. |
+| **Depth (km)** | Kedalaman pusat gempa | Gempa dangkal (<70 km) biasanya lebih terasa di permukaan. |
+| **CDI** | Community Determined Intensity | Seberapa kuat guncangan dirasakan oleh masyarakat (1–10). |
+| **MMI** | Modified Mercalli Intensity | Skala intensitas fisik gempa terhadap bangunan dan lingkungan (1–10). |
+| **SIG** | Significance | Nilai positif = signifikan, negatif = ringan. |
 """)
 
 st.markdown("---")
 
-# Mapping warna alert
 alert_labels = {
     0: "🟢 Green – Dampak sangat kecil atau tidak signifikan",
     1: "🟡 Yellow – Dampak sedang, potensi kerusakan kecil",
@@ -51,11 +47,8 @@ alert_colors = {
     3: "#D50000",  # red
 }
 
-def get_alert_label(value):
-    return alert_labels.get(value, "Tidak diketahui")
-
 def highlight_alert(model_name, value):
-    label = get_alert_label(value)
+    label = alert_labels.get(value, "Tidak diketahui")
     color = alert_colors.get(value, "#FFFFFF")
     html = f"""
     <div style="background-color:{color}; padding:15px; border-radius:10px; text-align:center; color:white; font-weight:bold; font-size:18px;">
@@ -64,7 +57,6 @@ def highlight_alert(model_name, value):
     """
     st.markdown(html, unsafe_allow_html=True)
 
-# Input Manual
 st.subheader("🧮 Masukkan Data Gempa")
 
 col1, col2 = st.columns(2)
@@ -79,17 +71,12 @@ with col2:
 input_data = pd.DataFrame([[magnitude, depth, cdi, mmi, sig]],
                           columns=["magnitude", "depth", "cdi", "mmi", "sig"])
 
-# Prediksi
 if st.button("🔍 Prediksi Alert"):
-    gb_pred = gb_model.predict(input_data)[0]
-    rf_pred = rf_model.predict(input_data)[0]
-
+    pred = rf_model.predict(input_data)[0]
     st.success("✅ Prediksi berhasil dilakukan!")
 
     st.markdown("### 🌐 Hasil Prediksi")
-    highlight_alert("Gradient Boosting", gb_pred)
-    st.markdown("<br>", unsafe_allow_html=True)
-    highlight_alert("Random Forest", rf_pred)
+    highlight_alert("Random Forest", pred)
 
     st.markdown("---")
     st.markdown("### 🧭 Arti Warna Alert")

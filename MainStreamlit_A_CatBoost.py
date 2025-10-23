@@ -6,7 +6,7 @@ import pickle
 
 @st.cache_resource
 def load_model():
-    with open("BestModel_CLF_RandomForest_CatBoost.pkl", "rb") as f:
+    with open("best_gradient_boosting.pkl", "rb") as f:
         model = pickle.load(f)
     return model
 

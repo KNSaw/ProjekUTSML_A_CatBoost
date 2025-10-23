@@ -1,2 +1,2 @@
 GitHub: https://github.com/KNSaw/ProjekUTSML_A_CatBoost
-Streamlit: https://earthquake-CatBoost.streamlit.app/
+Streamlit: https://earthquakeCatBoost.streamlit.app/

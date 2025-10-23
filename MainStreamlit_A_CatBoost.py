@@ -76,7 +76,7 @@ if st.button("🔍 Prediksi Alert"):
     st.success("✅ Prediksi berhasil dilakukan!")
 
     st.markdown("### 🌐 Hasil Prediksi")
-    highlight_alert("Random Forest", pred)
+    highlight_alert("Gradient Boosting ", pred)
 
     st.markdown("---")
     st.markdown("### 🧭 Arti Warna Alert")
